@@ -12,16 +12,24 @@ def display(window):
     glLoadIdentity()
     glClearColor(1.0, 1.0, 1.0, 1.0)
     glPushMatrix()
-    glRotatef(angle, 0, 0, 1)
+    glRotatef(angle, 0, 1, 1) # вращение  (оси)
     glBegin(GL_POLYGON)
-    glColor3f(0.1,0.1,0.1)
-    glVertex2f(posx + size + 0.5,posy + size + 0.5)
-    glColor3f(0.35,0.0,0.89)
-    glVertex2f(posx - size + -0.5,posy + size + 0.5)
-    glColor3f(0.0,1.0,1.0)
-    glVertex2f(posx - size + -0.5,posy - size + -0.5)
-    glColor3f(0.78,0.23,1.0)
-    glVertex2f(posx + size + 0.5,posy - size + -0.5)
+
+    glColor3f(0,0,1) # цвет вершины
+    glVertex2f(posx + size,posy + size) # оординат вершины
+
+    glColor3f(0,1,0)
+    glVertex2f(posx - size,posy + size)
+
+    glColor3f(1,0,0)
+    glVertex2f(posx - size,posy - size)
+
+    glColor3f(0,0,0)
+    glVertex2f(posx + size,posy - size)
+
+    glColor3f(1, 1, 1)
+    glVertex2f(posx + 2 * size,  posy)
+
     glEnd()
     glPopMatrix()
     angle += delta
@@ -36,8 +44,10 @@ mods):
     if action == glfw.PRESS:
         if key == glfw.KEY_RIGHT:
             delta = -0.1
-    if key == 263: # glfw.KEY_LEFT
-        delta = 0.1
+        if key == glfw.KEY_LEFT:
+            delta = 0.1
+        if key == glfw.KEY_SPACE:
+            delta = 0
 
 
 
