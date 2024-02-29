@@ -1,16 +1,32 @@
 import glfw
 from OpenGL.GL import *
+from math import *
 deltaA = 0.0
 deltaB = 0.0
-alpha = 60
-beta = 60
+alpha = 0
+beta = 0
 
 def display(window):
     glLoadIdentity()
+    glMatrixMode(GL_PROJECTION)  # работа с матрицей проекции (см схему)
     glClear(GL_COLOR_BUFFER_BIT)
     glClear(GL_DEPTH_BUFFER_BIT) # убирает эффект перекрытия обьектов, используется при 3d графике
 
+    gamma = radians(35.26)
+    phi = radians(45)
+    glMultMatrixf([1, 0, 0, 0,
+                   0, 1, 0, 0,
+                   0, 0, 1, 0,
+                   0.8, 0.8, 0, 1])
+    def projection():
+        glMultMatrixf([
+            cos(phi), sin(phi)*sin(gamma), sin(gamma)*cos(gamma), 0,
+            0, cos(gamma), -sin(gamma), 0,
+            sin(phi), -cos(phi)*sin(gamma), -cos(phi)*cos(gamma), 0,
+            0, 0, 0, 1,
+        ])
 
+    projection()
 
     def cube(sz):
         glBegin(GL_QUADS)
@@ -51,24 +67,18 @@ def display(window):
         glVertex3f(sz / 2, sz / 2, sz / 2)
         glVertex3f(-sz / 2, sz / 2, sz / 2)
         glEnd()
-
-    global alpha, beta
-    glRotatef(alpha, 1, 0, 0)  # вращение  (оси)
-    glRotatef(beta, 0, 1, 0)  # вращение  (оси)
-
-    glMatrixMode(GL_PROJECTION)  # работа с матрицей проекции (см схему)
     # умножаем на матрицу переноса
+
+    cube(0.1)
+    glLoadIdentity()
     glMultMatrixf([1, 0, 0, 0,
                    0, 1, 0, 0,
                    0, 0, 1, 0,
-                   0.6, 0.6, 0, 1])
-    alpha += deltaA
-    beta += deltaB
-    cube(0.1)
-
-    glLoadIdentity()
-    glRotatef(alpha, 1, 0, 0)  # вращение  (оси)
-    glRotatef(beta, 0, 1, 0)  # вращение  (оси)
+                   -0.5, 0, 0, 1])
+    global alpha, beta
+    gamma = radians(35.26) + alpha
+    phi = radians(45) + beta
+    projection()
     cube(0.4)
 
     glfw.swap_buffers(window)
@@ -77,19 +87,16 @@ def display(window):
 def key_callback(window, key, scancode, action,
 mods):
     # управляем направлением вращения
-    global deltaA, deltaB
-    if action == glfw.PRESS:
+    global alpha, beta
+    if action == glfw.PRESS or action == glfw.REPEAT:
         if key == glfw.KEY_RIGHT:
-            deltaA += -0.05
+            alpha += -0.05
         if key == glfw.KEY_LEFT:
-            deltaA += 0.05
-        if key == glfw.KEY_SPACE:
-            deltaA = 0
-            deltaB = 0
+            alpha += 0.05
         if key == glfw.KEY_A:
-            deltaB += - 0.05
+            beta += - 0.05
         if key == glfw.KEY_D:
-            deltaB += 0.05
+            beta += 0.05
 
 def main():
     if not glfw.init():
