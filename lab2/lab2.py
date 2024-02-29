@@ -12,21 +12,23 @@ def display(window):
     glClear(GL_COLOR_BUFFER_BIT)
     glClear(GL_DEPTH_BUFFER_BIT) # убирает эффект перекрытия обьектов, используется при 3d графике
 
-    gamma = radians(35.26)
     phi = radians(45)
+    gamma = radians(35.26)
+
     glMultMatrixf([1, 0, 0, 0,
                    0, 1, 0, 0,
                    0, 0, 1, 0,
                    0.8, 0.8, 0, 1])
-    def projection():
+
+    def isometricProjection():
         glMultMatrixf([
-            cos(phi), sin(phi)*sin(gamma), sin(gamma)*cos(gamma), 0,
-            0, cos(gamma), -sin(gamma), 0,
-            sin(phi), -cos(phi)*sin(gamma), -cos(phi)*cos(gamma), 0,
+            cos(phi), sin(phi)*sin(gamma), -sin(gamma)*cos(gamma), 0,
+            0, cos(gamma), sin(gamma), 0,
+            sin(phi), -cos(phi)*sin(gamma), cos(phi)*cos(gamma), 0,
             0, 0, 0, 1,
         ])
 
-    projection()
+    isometricProjection()
 
     def cube(sz):
         glBegin(GL_QUADS)
@@ -49,19 +51,19 @@ def display(window):
         glVertex3f(sz / 2, -sz / 2, sz / 2)
         glVertex3f(sz / 2, -sz / 2, -sz / 2)
 
-        glColor3f(1.0, 1.0, 0.0)
+        glColor3f(1.0, 1.0, 0.0) #yellow
         glVertex3f(-sz / 2, sz / 2, -sz / 2)
         glVertex3f(-sz / 2, sz / 2, sz / 2)
         glVertex3f(sz / 2, sz / 2, sz / 2)
         glVertex3f(sz / 2, sz / 2, -sz / 2)
 
-        glColor3f(0.0, 1.0, 1.0)
+        glColor3f(0.0, 1.0, 1.0) #light blue
         glVertex3f(-sz / 2, -sz / 2, -sz / 2)
         glVertex3f(sz / 2, -sz / 2, -sz / 2)
         glVertex3f(sz / 2, sz / 2, -sz / 2)
         glVertex3f(-sz / 2, sz / 2, -sz / 2)
 
-        glColor3f(1.0, 0.0, 1.0)
+        glColor3f(1.0, 0.0, 1.0) #purple
         glVertex3f(-sz / 2, -sz / 2, sz / 2)
         glVertex3f(sz / 2, -sz / 2, sz / 2)
         glVertex3f(sz / 2, sz / 2, sz / 2)
@@ -74,11 +76,13 @@ def display(window):
     glMultMatrixf([1, 0, 0, 0,
                    0, 1, 0, 0,
                    0, 0, 1, 0,
-                   -0.5, 0, 0, 1])
+                   -0.5, 0, -0.5, 1])
     global alpha, beta
-    gamma = radians(35.26) + alpha
-    phi = radians(45) + beta
-    projection()
+
+    phi += + beta
+    gamma += + alpha
+
+    isometricProjection()
     cube(0.4)
 
     glfw.swap_buffers(window)
