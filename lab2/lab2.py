@@ -8,8 +8,10 @@ beta = 60
 def display(window):
     glLoadIdentity()
     glClear(GL_COLOR_BUFFER_BIT)
-    glClear(GL_DEPTH_BUFFER_BIT)
-    glMatrixMode(GL_PROJECTION)
+    glClear(GL_DEPTH_BUFFER_BIT) # убирает эффект перекрытия обьектов, используется при 3d графике
+
+
+
     def cube(sz):
         glBegin(GL_QUADS)
 
@@ -30,16 +32,19 @@ def display(window):
         glVertex3f(-sz / 2, -sz / 2, sz / 2)
         glVertex3f(sz / 2, -sz / 2, sz / 2)
         glVertex3f(sz / 2, -sz / 2, -sz / 2)
+
         glColor3f(1.0, 1.0, 0.0)
         glVertex3f(-sz / 2, sz / 2, -sz / 2)
         glVertex3f(-sz / 2, sz / 2, sz / 2)
         glVertex3f(sz / 2, sz / 2, sz / 2)
         glVertex3f(sz / 2, sz / 2, -sz / 2)
+
         glColor3f(0.0, 1.0, 1.0)
         glVertex3f(-sz / 2, -sz / 2, -sz / 2)
         glVertex3f(sz / 2, -sz / 2, -sz / 2)
         glVertex3f(sz / 2, sz / 2, -sz / 2)
         glVertex3f(-sz / 2, sz / 2, -sz / 2)
+
         glColor3f(1.0, 0.0, 1.0)
         glVertex3f(-sz / 2, -sz / 2, sz / 2)
         glVertex3f(sz / 2, -sz / 2, sz / 2)
@@ -50,8 +55,20 @@ def display(window):
     global alpha, beta
     glRotatef(alpha, 1, 0, 0)  # вращение  (оси)
     glRotatef(beta, 0, 1, 0)  # вращение  (оси)
+
+    glMatrixMode(GL_PROJECTION)  # работа с матрицей проекции (см схему)
+    # умножаем на матрицу переноса
+    glMultMatrixf([1, 0, 0, 0,
+                   0, 1, 0, 0,
+                   0, 0, 1, 0,
+                   0.6, 0.6, 0, 1])
     alpha += deltaA
     beta += deltaB
+    cube(0.1)
+
+    glLoadIdentity()
+    glRotatef(alpha, 1, 0, 0)  # вращение  (оси)
+    glRotatef(beta, 0, 1, 0)  # вращение  (оси)
     cube(0.4)
 
     glfw.swap_buffers(window)
@@ -83,7 +100,6 @@ def main():
         return
     glfw.make_context_current(window)
     glfw.set_key_callback(window, key_callback)
-    # glfw.set_scroll_callback(window, scroll_callback)
 
     glEnable(GL_DEPTH_TEST)
     glDepthFunc(GL_LESS)
