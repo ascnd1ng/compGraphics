@@ -1,99 +1,93 @@
 import glfw
 from OpenGL.GL import *
-delta = 0.01
-angle = 0.0
+deltaA = 0.0
+deltaB = 0.0
+alpha = 60
+beta = 60
 
 def display(window):
-    vertices = [
-        # верх
-        (0, 0, 0),  # Вершина 1
-        (1, 0, 0),  # Вершина 2
-        (1, 1, 0),  # Вершина 3
-        (0, 1, 0),  # Вершина 4
-
-        # низ
-        (0, 0, -1),  # Вершина 1
-        (1, 0, -1),  # Вершина 2
-        (1, 1, -1),  # Вершина 3
-        (0, 1, -1),
-
-        (0, 0, 0),  # лево
-        (0, 1, 0),
-        (0, 1, -1),
-        (0, 0, -1),
-        #
-        (1, 0, 0),  # лево
-        (1, 1, 0),
-        (1, 1, -1),
-        (1, 0, -1),
-
-        #фронт
-        (0, 0, 0),
-        (1, 0, 0),
-        (1, 0, -1),
-        (0, 0, -1),
-
-        #бэк
-        (0, 1, 0),
-        (1, 1, 0),
-        (1, 1, -1),
-        (0, 1, -1)
-    ]
-    vertices = [(x / 10, y / 10, z / 10) for x, y, z in vertices]
-    colors = [(0, 0, 1), (0, 1, 0), (1, 0, 0)]
-    global angle
-    glClear(GL_COLOR_BUFFER_BIT)
     glLoadIdentity()
-    glClearColor(1.0, 1.0, 1.0, 1.0)
-    glPushMatrix()
-    glRotatef(angle, 1, 1, 1)  # вращение  (оси)
-    glBegin(GL_QUADS)
+    glClear(GL_COLOR_BUFFER_BIT)
+    glClear(GL_DEPTH_BUFFER_BIT)
+    glMatrixMode(GL_PROJECTION)
+    def cube(sz):
+        glBegin(GL_QUADS)
 
-    c = 0
-    for i in range (0, len(vertices), 4):
-        c += 1
-        index1, index2, index3, index4 = (i, i + 1, i + 2, i + 3)
-        vertex1 = vertices[index1]
-        vertex2 = vertices[index2]
-        vertex3 = vertices[index3]
-        vertex4 = vertices[index4]
+        glColor3f(0.0, 0.0, 1.0) #blue
+        glVertex3f(-sz / 2, -sz / 2, -sz / 2)
+        glVertex3f(-sz / 2, sz / 2, -sz / 2)
+        glVertex3f(-sz / 2, sz / 2, sz / 2)
+        glVertex3f(-sz / 2, -sz / 2, sz / 2)
 
-        glColor3f(*colors[(i // 8)])
-        glVertex3f(*vertex1)
-        glVertex3f(*vertex2)
-        glVertex3f(*vertex3)
-        glVertex3f(*vertex4)
+        glColor3f(1.0, 0.0, 0.0) #red
+        glVertex3f(sz / 2, -sz / 2, -sz / 2)
+        glVertex3f(sz / 2, -sz / 2, sz / 2)
+        glVertex3f(sz / 2, sz / 2, sz / 2)
+        glVertex3f(sz / 2, sz / 2, -sz / 2)
 
-    print(c)
-    glEnd()
-    glPopMatrix()
+        glColor3f(0.0, 1.0, 0.0) #green
+        glVertex3f(-sz / 2, -sz / 2, -sz / 2)
+        glVertex3f(-sz / 2, -sz / 2, sz / 2)
+        glVertex3f(sz / 2, -sz / 2, sz / 2)
+        glVertex3f(sz / 2, -sz / 2, -sz / 2)
+        glColor3f(1.0, 1.0, 0.0)
+        glVertex3f(-sz / 2, sz / 2, -sz / 2)
+        glVertex3f(-sz / 2, sz / 2, sz / 2)
+        glVertex3f(sz / 2, sz / 2, sz / 2)
+        glVertex3f(sz / 2, sz / 2, -sz / 2)
+        glColor3f(0.0, 1.0, 1.0)
+        glVertex3f(-sz / 2, -sz / 2, -sz / 2)
+        glVertex3f(sz / 2, -sz / 2, -sz / 2)
+        glVertex3f(sz / 2, sz / 2, -sz / 2)
+        glVertex3f(-sz / 2, sz / 2, -sz / 2)
+        glColor3f(1.0, 0.0, 1.0)
+        glVertex3f(-sz / 2, -sz / 2, sz / 2)
+        glVertex3f(sz / 2, -sz / 2, sz / 2)
+        glVertex3f(sz / 2, sz / 2, sz / 2)
+        glVertex3f(-sz / 2, sz / 2, sz / 2)
+        glEnd()
+
+    global alpha, beta
+    glRotatef(alpha, 1, 0, 0)  # вращение  (оси)
+    glRotatef(beta, 0, 1, 0)  # вращение  (оси)
+    alpha += deltaA
+    beta += deltaB
+    cube(0.4)
+
     glfw.swap_buffers(window)
     glfw.poll_events()
-    angle += delta
-
 
 def key_callback(window, key, scancode, action,
 mods):
     # управляем направлением вращения
-    global delta
-    global angle
+    global deltaA, deltaB
     if action == glfw.PRESS:
         if key == glfw.KEY_RIGHT:
-            delta = -0.01
+            deltaA += -0.05
         if key == glfw.KEY_LEFT:
-            delta = 0.01
+            deltaA += 0.05
         if key == glfw.KEY_SPACE:
-            delta = 0
+            deltaA = 0
+            deltaB = 0
+        if key == glfw.KEY_A:
+            deltaB += - 0.05
+        if key == glfw.KEY_D:
+            deltaB += 0.05
 
 def main():
     if not glfw.init():
         return
-    window = glfw.create_window(1300, 1000, "Isometric Cube", None, None)
+    window = glfw.create_window(640, 640, "isometric cube", None, None)
     if not window:
         glfw.terminate()
         return
     glfw.make_context_current(window)
     glfw.set_key_callback(window, key_callback)
+    # glfw.set_scroll_callback(window, scroll_callback)
+
+    glEnable(GL_DEPTH_TEST)
+    glDepthFunc(GL_LESS)
+
     while not glfw.window_should_close(window):
         display(window)
     glfw.destroy_window(window)
